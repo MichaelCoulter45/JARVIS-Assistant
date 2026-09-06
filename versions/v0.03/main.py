@@ -98,9 +98,9 @@ def find_path(user_object): # <---------- Update to return upto many matching fi
     """Searches some likely directories first, then the whole C drive."""
     path = shutil.which(user_object)
     # home_dir = Path.home()
-    likely_directories = [r"C:\Program Files (x86)", 
-                            r"C:\Program Files",
-                            r"C:\\"]
+    likely_directories = ["C:\\Program Files (x86)", 
+                            "C:\\Program Files",
+                            "C:\\"]
     # Search loop using likely directories and then the whole drive
     for directory in likely_directories:
         if path:
