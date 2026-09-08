@@ -43,7 +43,8 @@ Example commands:
 find, open, launch, execute
 
 
-Roadmap:
+### Roadmap: ###
+
 Current:
 - Natural language intent parsing
 - Target Discovery
