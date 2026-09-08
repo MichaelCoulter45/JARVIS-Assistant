@@ -41,12 +41,12 @@ Current:
 - Filesystem search
 - Path caching
 
-  Next:
-  - Better target discovery
-  - Cache validation
-  - Discovery Support
-  - More robust Windows application detection
-  - Multiple target handling
+Next:
+- Better target discovery
+- Cache validation
+- Discovery Support
+- More robust Windows application detection
+- Multiple target handling
 
 Future:
 - Voice activation
