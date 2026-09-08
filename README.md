@@ -1,3 +1,5 @@
+A Python-based Windows deaktop automation application inspired by Marvel's Jarvis. 
+
 Status: Active Development
 
 
