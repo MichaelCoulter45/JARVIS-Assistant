@@ -1,4 +1,6 @@
-A Python-based Windows deaktop automation application inspired by Marvel's Jarvis. 
+# JARVIS-Assistant
+
+A Python-based Windows desktop automation application inspired by Marvel's Jarvis.
 
 Status: Active Development
 

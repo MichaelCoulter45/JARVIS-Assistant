@@ -135,39 +135,40 @@ def open_target(target): # <---------------- Make this function responsable to o
     """
     target_path = find_path(target)
     
-    # Setup for multiple files with the same name.
-    candidates = []
     if target_path:
-        target_path = Path(target_path)
-        for item in target_path.rglob(f"{target}*"):
+        # Setup for multiple files with the same name.
+        candidates = []
+        target_path = Path(target_path) 
+        for item in target_path.rglob(f"C:\\Program Files"):
             if item.is_dir() and item.name.lower() == target:
                 candidates.append(item)
             elif item.is_file() and item.stem.lower() == target:
                 candidates.append(item)
-    
-    # No matches
-    if not candidates:
-        print(f"Cannot find {target}")
-        return None
-    
-    # One match.
-    if len(candidates) == 1:
-        return candidates[0]
-    
-    # Multiple matches found.
-    print(f"\nMultiple matches found for {target}:")
-    for idx, match in enumerate(candidates, start=1):
-        item_type = "Folder" if match.is_dir() else f"File ({match.suffix})"
-        print(f"  [{idx}] {match.name} --> {item_type}")
-    
-    choice = input(f"Which one do you want to open? (1-{len(candidates)}): ")
-    try:
-        selected_index = int(choice) - 1
-        return candidates[selected_index]
-    except (ValueError, IndexError):
-        print("Invalid selecetion.")
-        return None
-    
+        
+        # No matches
+        if not candidates:
+            print(f"Cannot find {target}")
+            return None
+        print(candidates)
+        # One match.
+        if len(candidates) == 1:
+            subprocess.Popen(candidates[0] + target_path.suffix)
+            # return candidates[0]
+        else:
+            # Multiple matches found.
+            print(f"\nMultiple matches found for {target}:")
+            for idx, match in enumerate(candidates, start=1):
+                item_type = "Folder" if match.is_dir() else f"File ({match.suffix})"
+                print(f"  [{idx}] {match.name} --> {item_type}")
+            
+            choice = input(f"Which one do you want to open? (1-{len(candidates)}): ")
+            try:
+                selected_index = int(choice) - 1
+                subprocess.Popen(candidates[selected_index])
+            except (ValueError, IndexError):
+                print("Invalid selecetion.")
+                return None
+    return None
 ###################################
 ###################################
 #Registry / Maps
