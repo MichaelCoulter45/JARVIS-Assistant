@@ -96,23 +96,33 @@ def dispatch(intent, user_object):
 @lru_cache
 def find_path(user_object): # <---------- Update to return upto many matching file paths.
     """Searches some likely directories first, then the whole C drive."""
-    path = shutil.which(user_object)
+    path = []
+    user_object = Path(user_object)
     # home_dir = Path.home()
+    
+    if shutil.which(user_object):
+        path.join(shutil.which(user_object))
+    
     likely_directories = ["C:\\Program Files (x86)", 
                             "C:\\Program Files",
                             "C:\\"]
+    
     # Search loop using likely directories and then the whole drive
     for directory in likely_directories:
+        print(f"Searching {directory} for {user_object}")
         if path:
             break
         for root, dirs, files in os.walk(directory):
             # print(root, dirs, files) # Debugging
-            if user_object in files:
+            if user_object.stem in files:
                 path = os.path.join(root, user_object)
                 break
+        print(f"Couldn't find {user_object}")
+    
     if path:
         print(f"Found {user_object} at: ", path)
-    return path
+        return path
+    print(f"Could not find {user_object}")
 ###################################
 def open_application(user_object):
     print(f"Executing: '{user_object}'\n")
