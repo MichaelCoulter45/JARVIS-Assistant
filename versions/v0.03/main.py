@@ -93,31 +93,91 @@ def dispatch(intent, user_object):
         print(f"I don't understand what you're trying to do.")
 ###################################
 ###################################
-@lru_cache
-def find_path(user_object): # <---------------------------------------------------------------- Fix this function.
-    """Searches some likely directories first, then the whole C drive."""
-    likely_directories = ["C:\\Program Files", 
-                            "C:\\Program Files (x86)",
-                            "C:\\"]
-    path = []
-    if shutil.which(user_object):
-        path.join(shutil.which(user_object))
+# @lru_cache
+# def find_path(user_object): # <---------------------------------------------------------------- Fix this function.
+#     """Searches some likely directories first, then the whole C drive."""
+#     likely_directories = [
+#         Path(r"C:\Program Files"), 
+#         Path(r"C:\Program Files (x86)"),
+#         Path("C:/")
+#     ]
+#     path = []
+#     if shutil.which(user_object):
+#         path.append(Path(shutil.which(user_object)))
         
-    # Search loop using likely directories and then the whole drive
+#     # Search loop using likely directories and then the whole drive
+#     for directory in likely_directories:
+#         print(f"Searching '{directory}' for {user_object}")
+#         if path:
+#             break
+#         for root, dirs, files in os.walk(directory):
+#             if user_object.lower() in [file.lower() for file in files]:
+#                 path.append(os.path.join(root, user_object))
+#                 print(f"path: {path}")
+    
+#     if path:
+#         print(f"Found {user_object} at: ", path)
+#         return path
+#     print(f"Could not find {user_object}")
+
+
+def find_path(user_object):
+    print("\n--- find_path DEBUG ---")
+    print(f"user_object: {user_object!r}")
+    print(f"type: {type(user_object)}")
+
+    likely_directories = [
+        Path(r"C:\Program Files"),
+        Path(r"C:\Program Files (x86)"),
+        Path("C:/")
+    ]
+
+    path = []
+
+    # Check PATH first
+    which_result = shutil.which(str(user_object))
+
+    print(f"shutil.which(): {which_result}")
+
+    if which_result:
+        path.append(Path(which_result))
+
+    # Search filesystem
     for directory in likely_directories:
-        print(f"Searching '{directory}' for {user_object}")
+
+        print(f"Searching '{directory}' for '{user_object}'")
+
         if path:
             break
+
         for root, dirs, files in os.walk(directory):
-            # print(root, dirs, files) # Debugging
-            if user_object in files:
-                path.join(os.path.join(root, user_object))
-                print(f"path: {path}")
-    
+
+            for file in files:
+
+                # Exact filename match
+                if file.lower() == str(user_object).lower():
+                    print(f"EXACT MATCH: {Path(root) / file}")
+                    
+                file_path = Path(root) / file
+                
+                # Filename stem match
+                if (
+                    file_path.stem.lower() == str(user_object).lower()
+                    and file_path.suffix.lower() == ".exe"
+                ):
+                    print(f"EXE MATCH: {file_path}")
+                    path.append(file_path)
+
+            if path:
+                break
+
     if path:
-        print(f"Found {user_object} at: ", path)
+        print(f"FOUND: {path}")
         return path
-    print(f"Could not find {user_object}")
+
+    print(f"COULD NOT FIND: {user_object}")
+
+
 ###################################
 def open_application(user_object):
     print(f"Executing: '{user_object}'\n")
@@ -149,14 +209,15 @@ def open_target(target): # <---------------- Make this function responsable to o
         return None
     
     else:
-        for dir in candidates:
-            candidates[dir] = Path(dir)
+        # for dir in candidates:
+        #     candidates[dir] = Path(dir)
         
         print(candidates) # Debugging
         
         # One match.
         if len(candidates) == 1:
-            subprocess.Popen(candidates[0])
+            # subprocess.Popen(candidates[0])
+            print("end.")
             
         # Setup for multiple files with the same name.
         else:
