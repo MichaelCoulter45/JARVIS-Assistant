@@ -94,30 +94,25 @@ def dispatch(intent, user_object):
 ###################################
 ###################################
 @lru_cache
-def find_path(user_object): # <---------- Update to return upto many matching file paths.
+def find_path(user_object): # <---------------------------------------------------------------- Fix this function.
     """Searches some likely directories first, then the whole C drive."""
+    likely_directories = ["C:\\Program Files", 
+                            "C:\\Program Files (x86)",
+                            "C:\\"]
     path = []
-    user_object = Path(user_object)
-    # home_dir = Path.home()
-    
     if shutil.which(user_object):
         path.join(shutil.which(user_object))
-    
-    likely_directories = ["C:\\Program Files (x86)", 
-                            "C:\\Program Files",
-                            "C:\\"]
-    
+        
     # Search loop using likely directories and then the whole drive
     for directory in likely_directories:
-        print(f"Searching {directory} for {user_object}")
+        print(f"Searching '{directory}' for {user_object}")
         if path:
             break
         for root, dirs, files in os.walk(directory):
             # print(root, dirs, files) # Debugging
-            if user_object.stem in files:
-                path = os.path.join(root, user_object)
-                break
-        print(f"Couldn't find {user_object}")
+            if user_object in files:
+                path.join(os.path.join(root, user_object))
+                print(f"path: {path}")
     
     if path:
         print(f"Found {user_object} at: ", path)
@@ -136,6 +131,9 @@ def open_application(user_object):
 ###################################
 def close_application(user_object):
     print(f"Closing {user_object}...")
+    target_path = find_path(user_object)
+    target = Path(target_path)
+    subprocess.call('taskkill', '/IM', f'{target.name}')
 ###################################
 def open_target(target): # <---------------- Make this function responsable to open already found paths. Not to find new paths.
     """
@@ -143,27 +141,24 @@ def open_target(target): # <---------------- Make this function responsable to o
     This is to find any and all files with the same name. 
     Launches the default app of the target regaurdless of file type and directory. 
     """
-    target_path = find_path(target)
+    candidates = find_path(target)
     
-    if target_path:
-        # Setup for multiple files with the same name.
-        candidates = []
-        target_path = Path(target_path) 
-        for item in target_path.rglob(f"C:\\Program Files"):
-            if item.is_dir() and item.name.lower() == target:
-                candidates.append(item)
-            elif item.is_file() and item.stem.lower() == target:
-                candidates.append(item)
+    # No matches
+    if not candidates:
+        print(f"Cannot find {target}")
+        return None
+    
+    else:
+        for dir in candidates:
+            candidates[dir] = Path(dir)
         
-        # No matches
-        if not candidates:
-            print(f"Cannot find {target}")
-            return None
-        print(candidates)
+        print(candidates) # Debugging
+        
         # One match.
         if len(candidates) == 1:
-            subprocess.Popen(candidates[0] + target_path.suffix)
-            # return candidates[0]
+            subprocess.Popen(candidates[0])
+            
+        # Setup for multiple files with the same name.
         else:
             # Multiple matches found.
             print(f"\nMultiple matches found for {target}:")
