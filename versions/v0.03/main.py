@@ -93,8 +93,8 @@ def dispatch(intent, user_object):
         print(f"I don't understand what you're trying to do.")
 ###################################
 ###################################
-@lru_cache
-def find_path(user_object): # <---------------------------------------------------------------- Fix this function.
+# @lru_cache
+def find_path(user_object): # <------------------- Make this able to find multiple paths for the same file name
     """Searches some likely directories first, then the whole C drive."""
     likely_directories = [
         Path(r"C:\Program Files"), 
@@ -112,95 +112,34 @@ def find_path(user_object): # <-------------------------------------------------
     # Search loop using likely directories and then the whole drive
     for directory in likely_directories:
         print(f"Searching '{directory}' for {user_object}")
-        if path:
-            break
         for root, dirs, files in os.walk(directory):
             for file in files:
-                file_path = Path(file) / file
-                if file_path.stem.lower() == str(user_object).lower and file_path.suffix.lower() == ".exe":
-                    path.append(os.path.join(root, user_object))
-                    print(f"path: {path}")
-        
+                file_path = Path(root) / file
+                if file_path.stem.lower() == str(user_object).lower() and file_path.suffix.lower() == ".exe":
+                    path.append(os.path.join(root, file_path.name))
+    
     if path:
-        print(f"Found {user_object} at: ", path)
+        print(f"Found {user_object} at:\n")
+        for count, paths in enumerate(path, start=1):
+            print(f"{count}. | {path[count - 1]}")
         return path
     print(f"Could not find {user_object}")
-
-# # ChatGPT DEBUG
-# def find_path(user_object):
-#     print("\n--- find_path DEBUG ---")
-#     print(f"user_object: {user_object!r}")
-#     print(f"type: {type(user_object)}")
-
-#     likely_directories = [
-#         Path(r"C:\Program Files"),
-#         Path(r"C:\Program Files (x86)"),
-#         Path("C:/")
-#     ]
-
-#     path = []
-
-#     # Check PATH first
-#     which_result = shutil.which(str(user_object))
-
-#     print(f"shutil.which(): {which_result}")
-
-#     if which_result:
-#         path.append(Path(which_result))
-
-
-#     # Search filesystem
-#     for directory in likely_directories:
-
-#         if path:
-#             break
-#         print(f"Searching '{directory}' for '{user_object}'")
-        
-#         for root, dirs, files in os.walk(directory):
-
-#             for file in files:
-
-#                 # Exact filename match
-#                 if file.lower() == str(user_object).lower():
-#                     print(f"EXACT MATCH: {Path(root) / file}")
-                    
-#                 file_path = Path(root) / file
-                
-#                 # Filename stem match
-#                 if (
-#                     file_path.stem.lower() == str(user_object).lower()
-#                     and file_path.suffix.lower() == ".exe"
-#                 ):
-#                     print(f"EXE MATCH: {file_path}")
-#                     path.append(file_path)
-#                     break
-
-#             if path:
-#                 break
-
-#     if path:
-#         print(f"FOUND: {path}")
-#         return path
-
-#     print(f"COULD NOT FIND: {user_object}")
-
-
 ###################################
-def open_application(user_object):
-    print(f"Executing: '{user_object}'\n")
-    user_object = user_object + ".exe"
-    target_app = find_path(user_object)
-    if target_app:
-        print(f"Found at: {target_app}") # Debugging
-        subprocess.Popen([target_app])
-    else:
-        print(f"Cannot find: {user_object}.\n")
+# def open_application(user_object):
+#     print(f"Executing: '{user_object}'\n")
+#     user_object = user_object + ".exe"
+#     target_app = find_path(user_object)
+#     if target_app:
+#         print(f"Found at: {target_app}") # Debugging
+#         subprocess.Popen([target_app])
+#     else:
+#         print(f"Cannot find: {user_object}.\n")
 ###################################
 def close_application(user_object):
     print(f"Closing {user_object}...")
     target_path = find_path(user_object)
-    target = Path(target_path)
-    subprocess.call('taskkill', '/IM', f'{target.name}')
+    # target = Path(target_path)
+    # subprocess.call('taskkill', '/IM', f'{target.name}')
 ###################################
 def open_target(target): # <---------------- Make this function responsable to open already found paths. Not to find new paths.
     """
@@ -219,12 +158,11 @@ def open_target(target): # <---------------- Make this function responsable to o
         # for dir in candidates:
         #     candidates[dir] = Path(dir)
         
-        print(candidates) # Debugging
+        # print(candidates) # Debugging
         
         # One match.
         if len(candidates) == 1:
-            # subprocess.Popen(candidates[0])
-            print("end.")
+            subprocess.Popen(candidates[0])
             
         # Setup for multiple files with the same name.
         else:
@@ -248,18 +186,16 @@ def open_target(target): # <---------------- Make this function responsable to o
 intent_map = { # Key-Word : Intent
     # Application Commands
     "find":"FIND_PATH",
-    
+    # Open App
     "open":"OPEN_PATH",
-    
-    "start":"OPEN_APPLICATION",
-    "launch":"OPEN_APPLICATION",
-    
+    "start":"OPEN_PATH",
+    "launch":"OPEN_PATH",
+    # Close App
     "close":"CLOSE_APPLICATION",
     "kill":"CLOSE_APPLICATION",
     "terminate":"CLOSE_APPLICATION",
     "exit":"CLOSE_APPLICATION",
     "quit":"CLOSE_APPLICATION",
-    
     # Jarvis Commands
     f"{hotkey_quit}":"QUIT_JARVIS"
             }
@@ -267,7 +203,6 @@ intent_map = { # Key-Word : Intent
 command_map = { # Intent : Command
     "FIND_PATH":find_path,
     "OPEN_PATH":open_target,
-    "OPEN_APPLICATION":open_application,
     "CLOSE_APPLICATION":close_application,
     "QUIT_JARVIS":toggle_active,
             }
