@@ -93,8 +93,8 @@ def dispatch(intent, user_object):
         print(f"I don't understand what you're trying to do.")
 ###################################
 ###################################
-# @lru_cache
-def find_path(user_object): # <------------------- Make this able to find multiple paths for the same file name
+@lru_cache
+def find_path(user_object:str) -> list[Path]:
     """Searches some likely directories first, then the whole C drive."""
     likely_directories = [
         Path(r"C:\Program Files"), 
@@ -111,7 +111,7 @@ def find_path(user_object): # <------------------- Make this able to find multip
         
     # Search loop using likely directories and then the whole drive
     for directory in likely_directories:
-        print(f"Searching '{directory}' for {user_object}")
+        print(f"Searching '{directory}'")
         for root, dirs, files in os.walk(directory):
             for file in files:
                 file_path = Path(root) / file
@@ -119,9 +119,10 @@ def find_path(user_object): # <------------------- Make this able to find multip
                     path.append(os.path.join(root, file_path.name))
     
     if path:
-        print(f"Found {user_object} at:\n")
-        for count, paths in enumerate(path, start=1):
-            print(f"{count}. | {path[count - 1]}")
+        print(f"Found {user_object} at:")
+        for count, paths in enumerate(path):
+            path[count] = Path(paths)
+            print(f"{count+1}. | {path[count]}")
         return path
     print(f"Could not find {user_object}")
 ###################################
@@ -137,11 +138,11 @@ def find_path(user_object): # <------------------- Make this able to find multip
 ###################################
 def close_application(user_object):
     print(f"Closing {user_object}...")
-    target_path = find_path(user_object)
+    # target_path = find_path(user_object)
     # target = Path(target_path)
     # subprocess.call('taskkill', '/IM', f'{target.name}')
 ###################################
-def open_target(target): # <---------------- Make this function responsable to open already found paths. Not to find new paths.
+def open_target(target:Path):
     """
     Currently searches the entire C:/ drive from find_path() even if found early. 
     This is to find any and all files with the same name. 
@@ -149,32 +150,28 @@ def open_target(target): # <---------------- Make this function responsable to o
     """
     candidates = find_path(target)
     
+    
     # No matches
     if not candidates:
         print(f"Cannot find {target}")
         return None
     
     else:
-        # for dir in candidates:
-        #     candidates[dir] = Path(dir)
-        
-        # print(candidates) # Debugging
-        
         # One match.
         if len(candidates) == 1:
             subprocess.Popen(candidates[0])
-            
-        # Setup for multiple files with the same name.
+        
+        # Multiple files with the same name.
         else:
             # Multiple matches found.
             print(f"\nMultiple matches found for {target}:")
-            for idx, match in enumerate(candidates, start=1):
-                item_type = "Folder" if match.is_dir() else f"File ({match.suffix})"
-                print(f"  [{idx}] {match.name} --> {item_type}")
+            for index, match in enumerate(candidates, start=1):
+                for index, candidate in enumerate(candidates):
+                    candidates[index] = Path(candidate)
             
             choice = input(f"Which one do you want to open? (1-{len(candidates)}): ")
             try:
-                selected_index = int(choice) - 1
+                selected_index = int(choice) - 1 # <-- The choices start at 1.
                 subprocess.Popen(candidates[selected_index])
             except (ValueError, IndexError):
                 print("Invalid selecetion.")
