@@ -1,0 +1,19 @@
+v0.01
+- Initial release of JARVIS-Assistant
+- Proof of concept
+- "open chrome" -> Hard-coded to Popen Google Chrome.exe path
+
+
+v0.02
+- Generalized command execution
+- input -> parser -> intent -> function registry -> target -> filesystem search -> execute
+- Caching
+- Error Handling
+
+
+v0.03
+- Generalized Target Handling
+- "Open something" -> intent: OPEN -> open_target() -> find_path() -> fail to find / one target found / multiple targets found -> execute / prompt user for selection
+
+
+v0.04

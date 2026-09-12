@@ -119,10 +119,10 @@ def find_path(user_object:str) -> list[Path]:
                     path.append(os.path.join(root, file_path.name))
     
     if path:
-        print(f"Found {user_object} at:")
-        for count, paths in enumerate(path):
-            path[count] = Path(paths)
-            print(f"{count+1}. | {path[count]}")
+        # print(f"Found {user_object} at:")
+        # for count, paths in enumerate(path):
+        #     path[count] = Path(paths)
+        #     print(f"{count+1}. | {path[count]}")
         return path
     print(f"Could not find {user_object}")
 ###################################
@@ -149,8 +149,6 @@ def open_target(target:Path):
     Launches the default app of the target regaurdless of file type and directory. 
     """
     candidates = find_path(target)
-    
-    
     # No matches
     if not candidates:
         print(f"Cannot find {target}")
@@ -161,21 +159,26 @@ def open_target(target:Path):
         if len(candidates) == 1:
             subprocess.Popen(candidates[0])
         
-        # Multiple files with the same name.
         else:
             # Multiple matches found.
             print(f"\nMultiple matches found for {target}:")
-            for index, match in enumerate(candidates, start=1):
-                for index, candidate in enumerate(candidates):
-                    candidates[index] = Path(candidate)
+            for index, candidate in enumerate(candidates):
+                candidates[index] = Path(candidate)
+                print(f"[{index+1}] {candidates[index]}")
             
-            choice = input(f"Which one do you want to open? (1-{len(candidates)}): ")
-            try:
-                selected_index = int(choice) - 1 # <-- The choices start at 1.
-                subprocess.Popen(candidates[selected_index])
-            except (ValueError, IndexError):
-                print("Invalid selecetion.")
-                return None
+            while True:
+                choice = input(f"Which one do you want to open? [1-{len(candidates)}] Enter 'N' to go back:\n")
+                if choice.lower() == 'n':
+                    return None
+                try:
+                    selected_index = int(choice) - 1 # <-- The choices start at 1.
+                    if 1 < int(choice) < len(candidates):
+                        subprocess.Popen(candidates[selected_index])
+                        break
+                except (ValueError, IndexError):
+                    print("Invalid selection.")
+                except (TypeError):
+                    print("Type Error. Input must be int.")
     return None
 ###################################
 ###################################
