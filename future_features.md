@@ -5,4 +5,4 @@ In no particular order; brainstorming ideas
 2. smart decision making
 3. history / memory
 4. AI implementation for conversations and logic
-5. 
+5. open two more apps at once

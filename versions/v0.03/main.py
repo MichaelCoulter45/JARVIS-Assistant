@@ -25,6 +25,7 @@ from pathlib import Path
 7. Replace lru_cache with a saved to disk cache system.
 8. Add layer to Caching system in-case the cache path is no longer existing. ie) reinstall a program
 9. XX Make a safe guard for when the user inputs nothing or " ", where user_input[0] doesn't exist.
+10. Open two or more apps at once.
 
 ... After enabling speak to text, Add "Hey Jarvis, ..." for the program to listen to the command, ignoring everything else to prevent accidental commands. 
 """
@@ -62,7 +63,7 @@ def ask_for_command():
     else:
         print(f"You didn't enter anything..")
 ###################################
-def process_user_input(user_input):
+def process_user_input(user_input): # <------------------------------- Rework this to be smarter
     """ 
     Returns an action and the target object from the user's input.
     """
@@ -172,7 +173,7 @@ def open_target(target:Path):
                     return None
                 try:
                     selected_index = int(choice) - 1 # <-- The choices start at 1.
-                    if 1 < int(choice) < len(candidates):
+                    if 1 <= int(choice) <= len(candidates):
                         subprocess.Popen(candidates[selected_index])
                         break
                 except (ValueError, IndexError):
