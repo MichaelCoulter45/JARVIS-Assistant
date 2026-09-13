@@ -71,14 +71,26 @@ Future:
 
 
 How to run it:
-TBD
-
+Prerequisites:
+- Windows 10/11
+- Python 3.xx.x
+- Git
+1. Clone the repository
+   - git clone https://github.com/MichaelCoulter45/JARVIS-Assistant.git
+   - cd JARVIS-Assistant
+2. Create a virtual environment
+   - python -m venv .venv
+3. Activate it with CMD / Power Shell
+   - .venv\Scripts\Activate.ps1
+4. .venv\Scripts\activate
+5. pip install -r requirements.txt (Currently all technologies are native; this is step is not necessary)
+6. python main.py
 
 Development/version history:
 v0.01 -- Initial prototype
-v0.02 -- 
-v0.03 -- current development version
-
+v0.02 -- generalized pipeline structure
+v0.03 -- generalized path and file targeting
+v0.04 -- Smarter parsing and processing of user commands
 
 Design Philosophy / Project Goals:
 Build a modular desktop assistant that can interpret human commands, determine the user's intended action, locate the relevant target, and interact with the Windows environment.
