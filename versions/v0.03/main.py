@@ -103,7 +103,7 @@ def find_path(user_object:str) -> list[Path]:
         Path("C:/")
     ]
     
-    path = []
+    path: list[Path] = []
     
     # Check Windows PATH environment first
     which_path = shutil.which(str(user_object))
@@ -117,15 +117,13 @@ def find_path(user_object:str) -> list[Path]:
             for file in files:
                 file_path = Path(root) / file
                 if file_path.stem.lower() == str(user_object).lower() and file_path.suffix.lower() == ".exe":
-                    path.append(os.path.join(root, file_path.name))
-    
+                    path.append(file_path)
+                    
     if path:
-        # print(f"Found {user_object} at:")
-        # for count, paths in enumerate(path):
-        #     path[count] = Path(paths)
-        #     print(f"{count+1}. | {path[count]}")
         return path
+    
     print(f"Could not find {user_object}")
+    return []
 ###################################
 # def open_application(user_object):
 #     print(f"Executing: '{user_object}'\n")
