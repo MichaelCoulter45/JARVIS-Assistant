@@ -8,7 +8,7 @@ Status: Active Development
 
 What is JARVIS-Assistant?
 
-JARVIS-Assistant is a Windows deaktop tool that can understand natural language commands and perform actions on the user's computer. The long term goal is to create a personal assistant capable of interacting with the PC through natural language.
+JARVIS-Assistant is a Windows desktop tool that can understand natural language commands and perform actions on the user's computer. The long term goal is to create a personal assistant capable of interacting with the PC through natural language.
 
 
 Why I built it:
