@@ -1,96 +1,68 @@
-# JARVIS-Assistant
+# JARVIS Assistant
 
-A Python-based Windows desktop automation application inspired by Marvel's Jarvis.
+A Python prototype for Windows desktop automation. JARVIS takes a short command, separates the action from the target, locates matching executable files, and dispatches the requested system action.
 
-Status: Active Development
+> **Project status:** Prototype / learning project. It is intentionally kept as a versioned record of the design work and experiments behind a personal desktop assistant.
 
+## Why I built it
 
+I wanted to understand how a personal assistant could turn a plain-language request such as `open chrome` into a concrete system action. The project began as a hard-coded proof of concept and grew into a more general command pipeline.
 
-What is JARVIS-Assistant?
+## How it works
 
-JARVIS-Assistant is a Windows deaktop tool that can understand natural language commands and perform actions on the user's computer. The long term goal is to create a personal assistant capable of interacting with the PC through natural language.
+```text
+User command
+  -> command parser
+  -> intent lookup
+  -> target discovery
+  -> dispatcher
+  -> Windows system action
+```
 
+The current prototype uses a small command registry rather than an AI model. That makes the parsing logic visible and easy to reason about while the project explores the assistant architecture.
 
-Why I built it:
+## Current capabilities
 
-I was inspired by the Jarvis from Marvel's Ironman series and wanted to make my very own personal AI assistant. This was way before I knew anything about programming, and one of the many reasons why I chose to pursue Computer Science. 
+- Splits a command into an action and target, such as `open chrome`
+- Maps supported verbs to application actions
+- Searches common Windows locations and the Windows `PATH` for executable targets
+- Handles zero, one, or multiple matching targets
+- Launches a selected executable with Python's `subprocess` module
+- Caches target-search results during a session
 
+## Technology
 
-What it can currently do:
-
-JARVIS-Assistant currently understands the user's intent and what action to perform on the user's target. 
-
-User's command --> Detect Intention --> Identify Target --> Find Target --> Dispatch Action --> Computer Action.
-
-ie: "Open Chrome" goes through a pipeline through the AI to figure out what the user's intention is, what the target is, where the target is, and a dispatcher decides what happens to the target. In this case, the target is chrome and the intended action is to open it.
-
-
-How the architecture works:
-
-User --> Command Input --> Intent Parser --> Intent & Target --> Target Discovery --> Dispatcher --> System Action
-
-The user inputs a command into the program --> The command gets split and parsed into two different sections - Intent and Target --> The program searches the computer's files to find and return the target's path --> the Intent gets passed to the Dispatcher --> The Dispatcher decides what function is called and passes the target to the appropirate function --> The application performs the detected intended action given by the user.
-
-
-Technologies used: 
 - Python
-- pathlib -- filesystem & path handling
-- subprocess -- launching / interacting with processes
-- shutil -- filesystem utilities
-- functools -- caching with lru_cache
-- os -- windows / system interaction
+- `pathlib` for path handling
+- `subprocess` for launching programs
+- `shutil.which` and `os.walk` for target discovery
+- `functools.lru_cache` for session-level caching
 
+## Run the prototype
 
-Example commands:
-find, open, launch, execute
+This project has no third-party dependencies.
 
+```powershell
+python .\versions\v0.03\main.py
+```
 
-### Roadmap: ###
+Windows is required because target discovery and launching are designed around Windows executable paths.
 
-Current:
-- Natural language intent parsing
-- Target Discovery
-- Application Handling
-- Filesystem search
-- Path caching
+## Repository guide
 
+- `versions/` contains the preserved prototypes and their progression.
+- `versions/v0.03/main.py` is the latest runnable implementation in this repository.
+- `core/` is reserved for a future modular refactor.
+- `future_features.md` and `version_history.txt` document the next ideas and earlier iterations.
 
-Next:
-- Better target discovery
-- Cache validation
-- Discovery Support
-- More robust Windows application detection
-- Multiple target handling
+## Next directions
 
+- Validate cached paths before using them
+- Search selected drives or directories instead of always walking broad locations
+- Improve handling of multiple targets and multi-application commands
+- Move the prototype into the planned `core/` module structure
+- Explore optional voice input only after the command pipeline is reliable
 
-Future:
-- Voice activation
-- "Hey Jarvis"
-- Voice input and output
-- Expand computer interaction
+## Limitations
 
-
-How to run it:
-Prerequisites:
-- Windows 10/11
-- Python 3.xx.x
-- Git
-1. Clone the repository
-   - git clone https://github.com/MichaelCoulter45/JARVIS-Assistant.git
-   - cd JARVIS-Assistant
-2. Create a virtual environment
-   - python -m venv .venv
-3. Activate it with CMD / Power Shell
-   - .venv\Scripts\Activate.ps1
-4. .venv\Scripts\activate
-5. pip install -r requirements.txt (Currently all technologies are native; this is step is not necessary)
-6. python main.py
-
-Development/version history:
-v0.01 -- Initial prototype
-v0.02 -- generalized pipeline structure
-v0.03 -- generalized path and file targeting
-v0.04 -- Smarter parsing and processing of user commands
-
-Design Philosophy / Project Goals:
-Build a modular desktop assistant that can interpret human commands, determine the user's intended action, locate the relevant target, and interact with the Windows environment.
+The current search strategy can be slow because it may walk large parts of a drive. It is a local learning prototype and should only be run on a machine where you understand the applications it may launch.
